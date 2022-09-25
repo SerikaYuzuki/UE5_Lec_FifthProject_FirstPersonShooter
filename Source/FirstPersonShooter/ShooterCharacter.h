@@ -27,6 +27,9 @@ protected:
 	void MouseTurnAtRate(float Rate); // these Rate s are ratio how strong the game stick leaned.
 	void MouseLookUpAtRate(float Rate);
 
+	// Called when Fire
+	void FireWeapon();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -52,6 +55,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	float MouseBaseLookUpRate;
 
+	// Setup Fire Sound
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	class USoundCue* FireShotSound;
+
+	// Muzzle Flash Paticle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	class UParticleSystem* MuzzleFlash;
+
+	// Hip fire montage
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* HipFireMontage;
 	
 public:
 	// Get Player Camera Arm
