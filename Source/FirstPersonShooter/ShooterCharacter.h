@@ -30,6 +30,8 @@ protected:
 	// Called when Fire
 	void FireWeapon();
 
+	bool GetBeamEndLocation( const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -66,6 +68,14 @@ private:
 	// Hip fire montage
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* HipFireMontage;
+
+	// Hit Particle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* ImpactParticle;
+
+	// Beam Particle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* BeamParticle;
 	
 public:
 	// Get Player Camera Arm
