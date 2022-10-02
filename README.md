@@ -25,6 +25,7 @@ const FVector RotationAxis {Rotation.GetAxisX()};
 
 ### DeprojectScreenToWorld
 ``` UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);```
-
 これで画面から世界に投影してる。
+### Super::NativeInitializeAnimation();
+これがaniminstansのコンストラクター
  ### QUESTION
