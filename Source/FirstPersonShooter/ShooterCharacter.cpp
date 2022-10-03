@@ -16,6 +16,8 @@
 AShooterCharacter::AShooterCharacter()	:
 CameraDefaultFOV(0),
 CameraZoomedFOV(60),
+CameraCurrentFOV(0),
+ZoomInterpSpeed(20),
 BaseTurnRate(45.f),
 BaseLookUpRate(45.f),
 MouseBaseTurnRate(0.4f),
@@ -57,6 +59,7 @@ void AShooterCharacter::BeginPlay()
 	if (CharactorCamera)
 	{
 		CameraDefaultFOV = GetCharactorCameraComponent()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
 	}
 }
 
@@ -189,18 +192,32 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 void AShooterCharacter::AimingButtonPressed()
 {
 	bIsAiming = true;
-	GetCharactorCameraComponent()->SetFieldOfView(CameraZoomedFOV);
 }
 void AShooterCharacter::AimingButtonReleased()
 {
 	bIsAiming = false;
-	GetCharactorCameraComponent()->SetFieldOfView(CameraDefaultFOV);
+}
+
+void AShooterCharacter::CameraInterpZoom(float DeltaTime)
+{
+	if (bIsAiming)
+	{
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraZoomedFOV, DeltaTime, ZoomInterpSpeed);
+	}
+	else
+	{
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraDefaultFOV, DeltaTime, ZoomInterpSpeed);
+	}
+	GetCharactorCameraComponent()->SetFieldOfView(CameraCurrentFOV);
 }
 
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// When Aiming Interpo Zoom
+	CameraInterpZoom(DeltaTime);
 
 }
 
