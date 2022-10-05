@@ -43,6 +43,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	float ZoomInterpSpeed;
 	void CameraInterpZoom(float DeltaTime);
+
+	void SetAimMouseRate();
 	
 public:	
 	// Called every frame
@@ -68,6 +70,16 @@ private:
 	float MouseBaseTurnRate;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	float MouseBaseLookUpRate;
+	// TurnRate for Hip
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float HipTurnRate;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float HipLookUpRate;
+	// TurnRate for Aiming
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float AimTurnRate;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float AimLookUpRate;
 
 	// Setup Fire Sound
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
@@ -92,6 +104,10 @@ private:
 	// Is Aiming
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
     bool bIsAiming;
+    
+    // Crosshair
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+    float CrosshairSpreadMultiplier;
 	
 public:
 	// Get Player Camera Arm
@@ -101,4 +117,6 @@ public:
 	// Get Player TurnRate
 	float GetPlayerTurnRate() const {return BaseTurnRate;};
 	float GetPlayerLookUpRate() const {return BaseLookUpRate;};
+
+	bool GetAiming() const {return bIsAiming;};
 };

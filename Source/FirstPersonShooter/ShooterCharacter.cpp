@@ -22,6 +22,10 @@ BaseTurnRate(45.f),
 BaseLookUpRate(45.f),
 MouseBaseTurnRate(0.4f),
 MouseBaseLookUpRate(0.4f),
+HipTurnRate(0.4f),
+HipLookUpRate(0.4f),
+AimTurnRate(0.3f),
+AimLookUpRate(0.3f),
 bIsAiming(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -211,6 +215,21 @@ void AShooterCharacter::CameraInterpZoom(float DeltaTime)
 	GetCharactorCameraComponent()->SetFieldOfView(CameraCurrentFOV);
 }
 
+void AShooterCharacter::SetAimMouseRate()
+{
+	
+	if (bIsAiming)
+	{
+		BaseTurnRate = AimTurnRate;
+		BaseLookUpRate = AimLookUpRate;
+	}
+	else
+	{
+		BaseTurnRate = HipTurnRate;
+		BaseLookUpRate = HipLookUpRate;
+	}
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -218,6 +237,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	// When Aiming Interpo Zoom
 	CameraInterpZoom(DeltaTime);
+
+	SetAimMouseRate();
 
 }
 
