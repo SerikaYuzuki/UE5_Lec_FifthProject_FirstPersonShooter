@@ -45,6 +45,8 @@ protected:
 	void CameraInterpZoom(float DeltaTime);
 
 	void SetAimMouseRate();
+
+	void CalculateCrosshairSpread(float DeltaTime);
 	
 public:	
 	// Called every frame
@@ -108,6 +110,14 @@ private:
     // Crosshair
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
     float CrosshairSpreadMultiplier;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	float CrosshairVelocityFactor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	float CrosshairInAirFactor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	float CrosshairAimFactor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	float CrosshairShootingFactor;
 	
 public:
 	// Get Player Camera Arm
@@ -119,4 +129,7 @@ public:
 	float GetPlayerLookUpRate() const {return BaseLookUpRate;};
 
 	bool GetAiming() const {return bIsAiming;};
+
+	UFUNCTION(BlueprintCallable)
+	float GetCrosshairMultiplier() const { return  CrosshairSpreadMultiplier;};
 };
