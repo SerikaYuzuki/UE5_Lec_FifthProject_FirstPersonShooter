@@ -28,4 +28,8 @@ const FVector RotationAxis {Rotation.GetAxisX()};
 これで画面から世界に投影してる。
 ### Super::NativeInitializeAnimation();
 これがaniminstansのコンストラクター
+
+### WorldTimerManager
+これが何をしているのか調べる必要あり。
+
  ### QUESTION

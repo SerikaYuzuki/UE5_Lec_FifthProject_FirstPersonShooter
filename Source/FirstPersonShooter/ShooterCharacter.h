@@ -47,7 +47,16 @@ protected:
 	void SetAimMouseRate();
 
 	void CalculateCrosshairSpread(float DeltaTime);
-	
+
+	void StartCrosshairBulletFire();
+	UFUNCTION()
+	void FinishCrosshairBulletFire();
+
+	void FireButtonPressed();
+	void FireButtonReleased();
+	void StartFireTimer();
+	UFUNCTION()
+	void AutoFireReset();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -118,6 +127,21 @@ private:
 	float CrosshairAimFactor;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	float ShootTimeDuration;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	bool bIsFiring;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	FTimerHandle CrosshairShootTimer;
+
+	bool bFireButtonBressed;
+
+	bool bShouldFire;
+
+	float AutomaticFireRate;
+
+	FTimerHandle AutoFireTimer;
 	
 public:
 	// Get Player Camera Arm

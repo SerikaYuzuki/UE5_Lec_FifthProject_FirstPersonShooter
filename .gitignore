@@ -75,3 +75,7 @@ DerivedDataCache/*
 
 # Rider Plugins
 Plugins/Developer/RiderLink
+
+# Town Map Asset
+
+Content/Megapack

@@ -26,7 +26,17 @@ HipTurnRate(0.4f),
 HipLookUpRate(0.4f),
 AimTurnRate(0.3f),
 AimLookUpRate(0.3f),
-bIsAiming(false)
+bIsAiming(false),
+CrosshairAimFactor(0),
+CrosshairInAirFactor(0),
+CrosshairShootingFactor(0),
+CrosshairSpreadMultiplier(0),
+CrosshairVelocityFactor(0),
+ShootTimeDuration(0.5),
+bIsFiring(false),
+AutomaticFireRate(0.1),
+bShouldFire(true),
+bFireButtonBressed(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -152,6 +162,35 @@ void AShooterCharacter::FireWeapon()
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
+
+	// Start Bullet fire timer for crosshair
+	StartCrosshairBulletFire();
+}
+void AShooterCharacter::FireButtonPressed()
+{
+	bFireButtonBressed = true;
+	StartFireTimer();
+}
+void AShooterCharacter::FireButtonReleased()
+{
+	bFireButtonBressed = false;
+}
+void AShooterCharacter::StartFireTimer()
+{
+	if (bShouldFire)
+	{
+		FireWeapon();
+		bShouldFire = false;
+		GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AShooterCharacter::AutoFireReset, AutomaticFireRate);
+	}
+}
+void AShooterCharacter::AutoFireReset()
+{
+	bShouldFire = true;
+	if (bFireButtonBressed)
+	{
+		StartFireTimer();
+	}
 }
 
 // Muzzle Socket to Hit Location. Return whether hit or not.
@@ -163,7 +202,6 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 		GEngine->GameViewport->GetViewportSize(ViewPortSize);
 	}
 	FVector2D CrosshairLocation(ViewPortSize.X/2.f,ViewPortSize.Y/2.f);
-	CrosshairLocation.Y -= 50.f;
 	FVector CrosshairWorldPosition;
 	FVector CrosshairWorldDirection;
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
@@ -201,7 +239,6 @@ void AShooterCharacter::AimingButtonReleased()
 {
 	bIsAiming = false;
 }
-
 void AShooterCharacter::CameraInterpZoom(float DeltaTime)
 {
 	if (bIsAiming)
@@ -214,7 +251,6 @@ void AShooterCharacter::CameraInterpZoom(float DeltaTime)
 	}
 	GetCharactorCameraComponent()->SetFieldOfView(CameraCurrentFOV);
 }
-
 void AShooterCharacter::SetAimMouseRate()
 {
 	
@@ -230,6 +266,7 @@ void AShooterCharacter::SetAimMouseRate()
 	}
 }
 
+// Crosshair HUD
 void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 {
 	FVector2D WalkSpeedRange{0.f,600.f};
@@ -237,8 +274,48 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 	FVector Velocity {GetVelocity()};
 	Velocity.Z = 0;
 	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
-	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+	if (GetCharacterMovement()->IsFalling())
+	{
+		CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 2.25, DeltaTime, 2.25);
+	}
+	else
+	{
+		CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0, DeltaTime, 13);
+	}
+	if (bIsAiming)
+	{
+		CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, -0.3, DeltaTime, 2.25);
+	}
+	else
+	{
+		CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0, DeltaTime, 13);
+	}
+	if (bIsFiring)
+	{
+		CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.3, DeltaTime, 15);
+	}
+	else
+	{
+		CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0, DeltaTime, 15);
+	}
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor +CrosshairAimFactor + CrosshairShootingFactor;
 }
+void AShooterCharacter::StartCrosshairBulletFire()
+{
+	bIsFiring = true;
+
+	GetWorldTimerManager().SetTimer(
+		CrosshairShootTimer,
+		this,
+		&AShooterCharacter::FinishCrosshairBulletFire,
+		ShootTimeDuration);
+}
+void AShooterCharacter::FinishCrosshairBulletFire()
+{
+	bIsFiring = false;
+}
+
+
 
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
@@ -270,7 +347,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	// Action Input Delegate
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AShooterCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AShooterCharacter::StopJumping);
-	PlayerInputComponent->BindAction("FireButton",IE_Pressed,this,&AShooterCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("FireButton",IE_Pressed,this,&AShooterCharacter::FireButtonPressed);
+	PlayerInputComponent->BindAction("FireButton",IE_Released,this,&AShooterCharacter::FireButtonReleased);
 	PlayerInputComponent->BindAction("Aiming",IE_Pressed,this,&AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("Aiming",IE_Released,this,&AShooterCharacter::AimingButtonReleased);
 
