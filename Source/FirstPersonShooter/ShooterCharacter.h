@@ -57,6 +57,13 @@ protected:
 	void StartFireTimer();
 	UFUNCTION()
 	void AutoFireReset();
+	
+	bool TraceUnderCrosshair(FHitResult& OutHitResult, FVector& OutHitLocation);
+
+	void TraceForItems();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Items", meta = (AllowPrivateAccess = "true"))
+	class AItem* TraceHitItemLastFrame;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -142,6 +149,9 @@ private:
 	float AutomaticFireRate;
 
 	FTimerHandle AutoFireTimer;
+
+	bool bShoudTraceForItems;
+	int8 OverlappedItemsCount;
 	
 public:
 	// Get Player Camera Arm
@@ -156,4 +166,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairMultiplier() const { return  CrosshairSpreadMultiplier;};
+
+	int8 GetOverlappedItemCount() const {return OverlappedItemsCount;};
+	void IncrementOverlappedItemCount(int8 Amount);
 };
