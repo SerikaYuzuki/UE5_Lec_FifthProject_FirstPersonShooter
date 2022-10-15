@@ -4,6 +4,7 @@
 #include "ShooterCharacter.h"
 
 #include "Item.h"
+#include "Weapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -78,6 +79,8 @@ void AShooterCharacter::BeginPlay()
 		CameraDefaultFOV = GetCharactorCameraComponent()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
+
+	SpawnDefaultWeapon();
 }
 
 // Setup Movement Func
@@ -369,7 +372,22 @@ void AShooterCharacter::FinishCrosshairBulletFire()
 	bIsFiring = false;
 }
 
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+	if (DefaultWeaponClass)
+	{
+		AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
 
+		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+
+		if (HandSocket)
+		{
+			HandSocket->AttachActor(DefaultWeapon, GetMesh());
+		}
+		
+		EquippedWeapon = DefaultWeapon;
+	}
+}
 
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)

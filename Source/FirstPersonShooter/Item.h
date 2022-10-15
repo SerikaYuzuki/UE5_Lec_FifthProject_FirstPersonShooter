@@ -6,6 +6,17 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemRarity : uint8
+{
+	EIR_Damaged UMETA(DisplayName = "Damaged"),
+	EIR_Common UMETA(DisplayName = "Common"),
+	EIR_Uncommon UMETA(DisplayName = "Uncommon"),
+	EIR_Rare UMETA(DisplayName = "Rare"),
+	EIR_Legendary UMETA(DisplayName = "Legendary"),
+	EIR_Max UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class FIRSTPERSONSHOOTER_API AItem : public AActor
 {
@@ -18,6 +29,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void SetActiveStars();
 
 public:	
 	// Called every frame
@@ -42,6 +55,15 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	FString ItemName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	int32 ItemCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	EItemRarity ItemRarity;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	TArray<bool> ActiveStars;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const {return PickupWidget;};
 };
