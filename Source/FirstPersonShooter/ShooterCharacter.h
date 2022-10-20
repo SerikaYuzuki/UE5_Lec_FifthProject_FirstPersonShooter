@@ -70,6 +70,7 @@ protected:
 	void DropWeapon();
 	void SelectButtonPressed();
 	void SelectButtonReleased();
+	void SwapWeaon(AWeapon* WeaponToSwap);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -164,7 +165,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AWeapon> DefaultWeaponClass;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	AItem* TraceHitItem;
 public:
 	// Get Player Camera Arm
 	USpringArmComponent* GetSpringArmComponent() const {return SpringArmComponent;};

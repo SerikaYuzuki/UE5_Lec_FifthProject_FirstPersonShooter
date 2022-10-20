@@ -46,7 +46,7 @@ void AItem::BeginPlay()
 	SetActiveStars();
 	
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
-	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::AItem::OnSphereEndOverlap);
+	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
 	SetItemProperties(ItemState);
 }
@@ -95,6 +95,7 @@ void AItem::SetItemProperties(EItemState State)
 	case EItemState::EIS_Pickup:
 		ItemMesh->SetSimulatePhysics(false);
 		ItemMesh->SetVisibility(true);
+		ItemMesh->SetEnableGravity(false);
 		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -108,17 +109,35 @@ void AItem::SetItemProperties(EItemState State)
 		break;
 
 	case EItemState::EIS_Equipped:
+		PickupWidget->SetVisibility(false);
+		
 		ItemMesh->SetSimulatePhysics(false);
 		ItemMesh->SetVisibility(true);
+		ItemMesh->SetEnableGravity(false);
 		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		break;
+
+	case EItemState::EIS_Falling:
+		ItemMesh->SetSimulatePhysics(true);
+		ItemMesh->SetEnableGravity(true);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
+
 		break;
 	}
 }
@@ -127,6 +146,7 @@ void AItem::SetItemProperties(EItemState State)
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 }
 
