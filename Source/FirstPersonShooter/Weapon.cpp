@@ -32,7 +32,7 @@ void AWeapon::ThrowWeapon()
 
 	float RandomRotation {FMath::FRandRange(0,30)};
 	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector(0,0,1));
-	ImpulseDirection *= 20;
+	ImpulseDirection *= 10000;
 	GetItemMesh()->AddImpulse(ImpulseDirection);
 
 	bFalling = true;
